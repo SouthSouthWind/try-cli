@@ -6,9 +6,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin":{
-    "hi":"./index.js"
+  "bin": {
+    "hi": "./index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "commander": "^8.3.0",
+    "formdata-node": "^4.3.1",
+    "fs": "^0.0.1-security",
+    "inquirer": "^8.2.0",
+    "loadsh": "^0.0.4",
+    "moment": "^2.29.1",
+    "superagent": "^6.1.0"
+  }
 }
