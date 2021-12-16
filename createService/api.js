@@ -1,5 +1,5 @@
 const Promise = require('bluebird');
-const { COOKIE } = require('./staticData.json');
+const { COOKIE, DOMAIN } = require('./staticData.json');
 const superagent = Promise.promisifyAll(require('superagent'));
 
 superagent.Request.prototype.cancellable = function () {
@@ -12,7 +12,7 @@ superagent.Request.prototype.then = function (done) {
 function request(options) {
   const { url, params, query, acceptType, type } = options;
   console.log('COOKIE', COOKIE);
-  var result = superagent['post'](`http://103.216.153.71:9221/${url}`)
+  var result = superagent['post'](`${DOMAIN}/${url}`)
     .timeout(10000)
     .type(type || 'json')
     .set({
@@ -58,7 +58,6 @@ const getGameversionlist = async function () {
     if (!!res && !!res.res && !!res.res.text)
       versionList = JSON.parse(res.res.text);
   });
-  console.log('versionList', versionList);
   return versionList;
 };
 

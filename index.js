@@ -1,82 +1,47 @@
 #!/usr/bin/env node
+/* env可以在系统的PATH目录中查找到node */
+
 var _ = require('loadsh');
-var program = require('commander');
+var { Command, Option } = require('commander');
 var inquirer = require('inquirer');
 var fs = require('fs');
 var { getGameversionlist } = require('./createService/api');
 var staticData = require('./createService/staticData.json');
-console.log(staticData);
-//staticData = JSON.parse(staticData);
+var { upDateJSON } = require('./utils');
+var program = new Command();
 program
-  .command('serve')
-  .option('-i, init <init>')
-  .action(function (options) {
-    console.log(111);
-    console.log('serve', options);
+  .option('-t --test [test]', '')
+  .addOption(
+    new Option('-d, --drink [size]', 'drink size')
+      .choices(['small', 'medium', 'large'])
+      .default('medium', 'one minute')
+  )
+  .action((res) => {
+    console.log('res', res);
   });
-program.command('list').action(function () {
-  inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'COOKIE',
-        message: '输入Cookie',
-        default: staticData.COOKIE,
-      },
-    ])
-    .then(async (res) => {
-      await fs.readFile(
-        './createService/staticData.json',
-        'utf-8',
-        function (err, data) {
-          var data = JSON.parse(data);
-          data = Object.assign(data, res);
-          fs.writeFile(
-            './createService/staticData.json',
-            JSON.stringify(data),
-            function (err, data) {
-              if (err) {
-                console.log('文件写入失败');
-              } else {
-                console.log('文件写入成功');
-                getGameversionlist();
-              }
-            }
-          );
-        }
-      );
-      //await setTimeout(console.log(res), 5000);
-    });
-});
-program.command('login').action(function () {
-  inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'username',
-        message: '输入姓名',
-        default: '',
-      },
-      {
-        type: 'input',
-        name: 'passWord',
-        message: '输入密码',
-        when: function (res) {
-          return res.username === '111';
+program
+  .usage('aaaa')
+  .command('list')
+  .option('-a all <all>', '查看全部')
+  .action(function () {
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'COOKIE',
+          message: '输入Cookie',
+          default: staticData.COOKIE,
         },
-        default: '',
-      },
-    ])
-    .then(async (res) => {
-      console.log(res);
-      //await setTimeout(console.log(res), 5000);
-    });
-});
+      ])
+      .then(async (res) => {
+        upDateJSON(res, './createService/staticData.json', async function () {
+          var versionList = await getGameversionlist();
+          for (let version of versionList) {
+            console.log(version?.gameVersion);
+          }
+        });
+      });
+  });
 
-console.log('program', program.login);
-if (_.isEmpty(program.parse(process.argv).args) && process.argv.length === 2) {
-  program.help();
-}
-if (program.init) {
-  console.log(222);
-}
+program.command('list1', '单独可执行文件作为子命令');
+program.parse(process.argv); // 解析命令行参数argv
